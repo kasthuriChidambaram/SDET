@@ -29,6 +29,9 @@ function CategoryView() {
         // Get subcategories
         const subcats = await subcategoryService.getSubcategoriesByCategory(currentCategory.id)
         setSubcategories(subcats)
+        
+        // Reset selected subcategory when category changes
+        setSelectedSubcategory(null)
       } catch (err) {
         setError('Failed to load category data')
         console.error(err)
@@ -58,6 +61,49 @@ function CategoryView() {
 
   if (error) {
     return <div style={styles.error}>{error}</div>
+  }
+
+  const renderCategoryOverview = () => {
+    if (!category) return null
+
+    return (
+      <div style={styles.categoryOverview}>
+        <h2 style={styles.contentTitle}>{category.name}</h2>
+        <div style={styles.overviewCard}>
+          <p style={styles.description}>{category.description}</p>
+          
+          <div style={styles.overviewSection}>
+            <h3 style={styles.overviewTitle}>What you'll learn</h3>
+            <div style={styles.overviewContent}>
+              {category.overview && category.overview.split('\n').map((point, index) => (
+                <div key={index} style={styles.overviewPoint}>
+                  <span style={styles.bulletPoint}>•</span>
+                  <span>{point}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={styles.subcategoriesOverview}>
+            <h3 style={styles.overviewTitle}>Available Topics</h3>
+            <div style={styles.topicGrid}>
+              {subcategories.map(subcat => (
+                <div
+                  key={subcat.id}
+                  style={styles.topicCard}
+                  onClick={() => setSelectedSubcategory(subcat)}
+                >
+                  <h4 style={styles.topicTitle}>{subcat.name}</h4>
+                  <button style={styles.exploreButton}>
+                    Explore →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -104,9 +150,7 @@ function CategoryView() {
             </div>
           </>
         ) : (
-          <div style={styles.placeholder}>
-            Select a subcategory to view questions
-          </div>
+          renderCategoryOverview()
         )}
       </div>
     </div>
@@ -178,6 +222,84 @@ const styles = {
     color: '#2d3748',
     marginBottom: '2rem',
   },
+  categoryOverview: {
+    maxWidth: '1000px',
+    margin: '0 auto',
+  },
+  overviewCard: {
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    padding: '2rem',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  },
+  description: {
+    fontSize: '1.1rem',
+    lineHeight: '1.7',
+    color: '#4a5568',
+    marginBottom: '2rem',
+  },
+  overviewSection: {
+    marginBottom: '2rem',
+  },
+  overviewTitle: {
+    fontSize: '1.5rem',
+    fontWeight: '600',
+    color: '#2d3748',
+    marginBottom: '1rem',
+  },
+  overviewContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.75rem',
+  },
+  overviewPoint: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.75rem',
+    fontSize: '1.1rem',
+    color: '#4a5568',
+  },
+  bulletPoint: {
+    color: '#4299e1',
+    fontSize: '1.2rem',
+    lineHeight: '1.5',
+  },
+  subcategoriesOverview: {
+    marginTop: '2rem',
+  },
+  topicGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+    gap: '1rem',
+    marginTop: '1rem',
+  },
+  topicCard: {
+    backgroundColor: '#f8fafc',
+    borderRadius: '8px',
+    padding: '1.5rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    border: '1px solid #e2e8f0',
+    ':hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    },
+  },
+  topicTitle: {
+    fontSize: '1.1rem',
+    fontWeight: '600',
+    color: '#2d3748',
+    marginBottom: '1rem',
+  },
+  exploreButton: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: '#4299e1',
+    fontSize: '0.9rem',
+    fontWeight: '500',
+    cursor: 'pointer',
+    padding: 0,
+  },
   questionList: {
     display: 'flex',
     flexDirection: 'column',
@@ -213,14 +335,6 @@ const styles = {
     color: '#4a5568',
     lineHeight: '1.6',
     whiteSpace: 'pre-wrap',
-  },
-  placeholder: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    color: '#a0aec0',
-    fontSize: '1.2rem',
   },
   error: {
     padding: '2rem',

@@ -5,7 +5,7 @@ class CategoryService {
         try {
             const { data, error } = await supabase
                 .from('categories')
-                .select('id, name, slug')
+                .select('id, name, slug, description, overview')
                 .order('name')
 
             if (error) {
