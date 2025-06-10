@@ -106,6 +106,41 @@ function CategoryView() {
     )
   }
 
+  const renderAnswer = (answer) => {
+    if (!answer) return null
+    
+    // Split the answer by line breaks
+    const lines = answer.split('\n')
+    
+    return (
+      <div style={styles.answerContainer}>
+        {lines.map((line, index) => {
+          const trimmedLine = line.trim()
+          
+          // Skip empty lines
+          if (!trimmedLine) return null
+          
+          // Check if line starts with bullet indicators
+          if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
+            return (
+              <div key={index} style={styles.bulletPoint}>
+                <span style={styles.bullet}>•</span>
+                <span>{trimmedLine.substring(1).trim()}</span>
+              </div>
+            )
+          }
+          
+          // Regular paragraph
+          return (
+            <p key={index} style={styles.answerParagraph}>
+              {trimmedLine}
+            </p>
+          )
+        })}
+      </div>
+    )
+  }
+
   return (
     <div style={styles.container}>
       {/* Sidebar */}
@@ -144,7 +179,7 @@ function CategoryView() {
                       {question.difficulty}
                     </span>
                   </div>
-                  <p style={styles.answer}>{question.answer}</p>
+                  {renderAnswer(question.answer)}
                 </div>
               ))}
             </div>
@@ -260,9 +295,27 @@ const styles = {
     color: '#4a5568',
   },
   bulletPoint: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.5rem',
+    color: '#4a5568',
+    lineHeight: '1.6',
+  },
+  bullet: {
     color: '#4299e1',
     fontSize: '1.2rem',
     lineHeight: '1.5',
+    flexShrink: 0,
+  },
+  answerParagraph: {
+    color: '#4a5568',
+    lineHeight: '1.6',
+    margin: 0,
+  },
+  answerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
   },
   subcategoriesOverview: {
     marginTop: '2rem',
@@ -330,11 +383,6 @@ const styles = {
     color: 'white',
     fontSize: '0.875rem',
     fontWeight: '500',
-  },
-  answer: {
-    color: '#4a5568',
-    lineHeight: '1.6',
-    whiteSpace: 'pre-wrap',
   },
   error: {
     padding: '2rem',
