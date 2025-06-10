@@ -106,40 +106,94 @@ function CategoryView() {
     )
   }
 
+  // This function will now focus on parsing text into 'code' or 'text' blocks.
+  // It will return an array of objects describing each block.
+  const parseContentBlocks = (text) => {
+    const normalized = text.replace(/\r\n/g, '\n'); // Normalize line breaks
+    
+    // Split into segments alternating between text and code blocks
+    const segments = normalized.split(/(```[\s\S]*?```)/g);
+    
+    return segments.map(segment => {
+      if (segment.startsWith('```') && segment.endsWith('```')) {
+        const content = segment.slice(3, -3).trim();
+        // Extract language if present
+        const firstNewlineIndex = content.indexOf('\n');
+        let lang = '';
+        let code = content;
+
+        if (firstNewlineIndex !== -1) {
+          lang = content.substring(0, firstNewlineIndex).trim();
+          code = content.substring(firstNewlineIndex + 1).trim();
+        }
+        return { type: 'code', content: code, lang: lang };
+      }
+      // If it's not a code block, it's a text segment
+      return { type: 'text', content: segment };
+    }).filter(block => block.content.trim() !== ''); // Filter out empty segments that might arise from split
+  };
+
+  // This function remains dedicated to processing inline code within a single line/text string.
+  const renderInlineCode = (text) => {
+    const parts = text.split(/(`[^`]+`)/g);
+    return parts.map((part, j) => {
+      if (part.startsWith('`') && part.endsWith('`')) {
+        return (
+          <code key={`inline-${j}`} style={styles.inlineCode}>
+            {part.slice(1, -1)}
+          </code>
+        );
+      }
+      return part;
+    });
+  };
+
+  // This function now orchestrates the rendering of the entire answer.
   const renderAnswer = (answer) => {
-    if (!answer) return null
-    
-    // Split the answer by line breaks
-    const lines = answer.split('\n')
-    
+    if (!answer) return null;
+
+    const contentBlocks = parseContentBlocks(answer);
+
     return (
       <div style={styles.answerContainer}>
-        {lines.map((line, index) => {
-          const trimmedLine = line.trim()
-          
-          // Skip empty lines
-          if (!trimmedLine) return null
-          
-          // Check if line starts with bullet indicators
-          if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
+        {contentBlocks.map((block, i) => {
+          if (block.type === 'code') {
+            // Render a code block
             return (
-              <div key={index} style={styles.bulletPoint}>
-                <span style={styles.bullet}>•</span>
-                <span>{trimmedLine.substring(1).trim()}</span>
-              </div>
-            )
+              <pre key={`code-block-${i}`} style={styles.codeBlockPre}>
+                <code className={`language-${block.lang}`}>
+                  {block.content}
+                </code>
+              </pre>
+            );
+          } else { // type === 'text'
+            // For text blocks, split by lines to handle paragraphs and bullets
+            const lines = block.content.split('\n');
+            return lines.map((line, lineIndex) => {
+              const trimmedLine = line.trim();
+              if (!trimmedLine) return null; // Skip empty lines
+
+              // Check for bullet points
+              if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
+                return (
+                  <div key={`bullet-${i}-${lineIndex}`} style={styles.bulletPoint}>
+                    <span style={styles.bullet}>•</span>
+                    <span>{renderInlineCode(trimmedLine.substring(1).trim())}</span>
+                  </div>
+                );
+              }
+              // Regular paragraph with inline code
+              return (
+                <p key={`paragraph-${i}-${lineIndex}`} style={styles.answerParagraph}>
+                  {renderInlineCode(trimmedLine)}
+                </p>
+              );
+            });
           }
-          
-          // Regular paragraph
-          return (
-            <p key={index} style={styles.answerParagraph}>
-              {trimmedLine}
-            </p>
-          )
         })}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div style={styles.container}>
@@ -389,6 +443,24 @@ const styles = {
     color: '#e53e3e',
     textAlign: 'center',
     fontSize: '1.2rem',
+  },
+  inlineCode: {
+    backgroundColor: '#f0f0f0',
+    padding: '2px 4px',
+    borderRadius: '3px',
+    fontFamily: 'monospace',
+    color: '#c7254e', // A distinct color for inline code
+  },
+  codeBlockPre: { // Renamed from codeBlock to avoid conflict and signify <pre> tag
+    background: '#f8f8f8',
+    padding: '12px',
+    borderRadius: '4px',
+    borderLeft: '3px solid #61dafb', // Blue border for code blocks
+    overflowX: 'auto',
+    margin: '16px 0',
+    whiteSpace: 'pre-wrap', // Preserves whitespace and line breaks inside pre
+    fontFamily: 'monospace',
+    color: '#333', // Default text color for code block content
   },
 }
 
