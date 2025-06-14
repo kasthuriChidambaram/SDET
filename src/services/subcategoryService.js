@@ -7,7 +7,7 @@ class SubcategoryService {
                 .from('subcategories')
                 .select('id, name, slug, category_id')
                 .eq('category_id', categoryId)
-                .order('name')
+                .order('id')
 
             if (error) {
                 console.error('Error fetching subcategories:', error)

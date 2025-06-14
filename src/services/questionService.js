@@ -7,7 +7,7 @@ class QuestionService {
                 .from('questions')
                 .select('id, question, answer, difficulty')
                 .eq('subcategory_id', subcategoryId)
-                .order('difficulty')
+                .order('id')
 
             if (error) {
                 console.error('Error fetching questions:', error)
