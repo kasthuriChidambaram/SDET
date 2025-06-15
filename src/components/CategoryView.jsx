@@ -72,18 +72,6 @@ function CategoryView() {
         <div style={styles.overviewCard}>
           <p style={styles.description}>{category.description}</p>
           
-          <div style={styles.overviewSection}>
-            <h3 style={styles.overviewTitle}>What you'll learn</h3>
-            <div style={styles.overviewContent}>
-              {category.overview && category.overview.split('\n').map((point, index) => (
-                <div key={index} style={styles.overviewPoint}>
-                  <span style={styles.bulletPoint}>•</span>
-                  <span>{point}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <div style={styles.subcategoriesOverview}>
             <h3 style={styles.overviewTitle}>Available Topics</h3>
             <div style={styles.topicGrid}>
