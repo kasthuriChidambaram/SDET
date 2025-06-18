@@ -11,6 +11,31 @@ function CategoryView() {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null)
   const [questions, setQuestions] = useState([])
   const [error, setError] = useState(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check screen size
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+    
+    checkScreenSize()
+    window.addEventListener('resize', checkScreenSize)
+    
+    return () => window.removeEventListener('resize', checkScreenSize)
+  }, [])
+
+  // Initialize Google AdSense
+  useEffect(() => {
+    if (window.adsbygoogle) {
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (error) {
+        console.error('Error loading Google AdSense:', error);
+      }
+    }
+  }, [questions]); // Re-run when questions change
 
   useEffect(() => {
     const fetchCategoryAndSubcategories = async () => {
@@ -185,8 +210,31 @@ function CategoryView() {
 
   return (
     <div style={styles.container}>
+      {/* Mobile Sidebar Toggle */}
+      {isMobile && (
+        <button 
+          style={styles.mobileSidebarToggle}
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          aria-label="Toggle sidebar"
+        >
+          ☰
+        </button>
+      )}
+
       {/* Sidebar */}
-      <div style={styles.sidebar}>
+      <div style={{
+        ...styles.sidebar,
+        ...(isMobile && {
+          position: 'fixed',
+          top: '64px',
+          left: 0,
+          height: 'calc(100vh - 64px)',
+          zIndex: 1000,
+          width: '240px',
+          padding: '1rem',
+          transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+        })
+      }}>
         <h2 style={styles.sidebarTitle}>{category?.name || 'Loading...'}</h2>
         <div style={styles.subcategoryList}>
           {subcategories.map(subcat => (
@@ -196,7 +244,10 @@ function CategoryView() {
                 ...styles.subcategoryButton,
                 ...(selectedSubcategory?.id === subcat.id ? styles.selectedSubcategory : {})
               }}
-              onClick={() => setSelectedSubcategory(subcat)}
+              onClick={() => {
+                setSelectedSubcategory(subcat)
+                setIsSidebarOpen(false) // Close sidebar on mobile after selection
+              }}
             >
               {subcat.name}
             </button>
@@ -225,11 +276,31 @@ function CategoryView() {
                 </div>
               ))}
             </div>
+            
+            {/* Google Ad in Footer */}
+            <div style={styles.adContainer}>
+              <ins
+                className="adsbygoogle"
+                style={styles.googleAd}
+                data-ad-client="ca-pub-YOUR_PUBLISHER_ID"
+                data-ad-slot="YOUR_AD_SLOT_ID"
+                data-ad-format="auto"
+                data-full-width-responsive="true"
+              />
+            </div>
           </>
         ) : (
           renderCategoryOverview()
         )}
       </div>
+
+      {/* Mobile Overlay */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          style={styles.mobileOverlay}
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
     </div>
   )
 }
@@ -251,19 +322,41 @@ const styles = {
   container: {
     display: 'flex',
     height: 'calc(100vh - 80px)', // Assuming navbar is 80px
+    position: 'relative',
+    '@media (max-width: 768px)': {
+      height: 'calc(100vh - 64px)',
+    },
+  },
+  mobileSidebarToggle: {
+    position: 'fixed',
+    top: '80px',
+    left: '10px',
+    zIndex: 1001,
+    backgroundColor: '#4299e1',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    padding: '8px 12px',
+    fontSize: '1.2rem',
+    cursor: 'pointer',
   },
   sidebar: {
-    width: '300px',
+    width: '250px',
     backgroundColor: '#f8f9fa',
     borderRight: '1px solid #e9ecef',
-    padding: '1.5rem',
+    padding: '1.25rem',
     overflowY: 'auto',
+    transition: 'transform 0.3s ease',
   },
   sidebarTitle: {
     fontSize: '1.5rem',
     fontWeight: '600',
     color: '#2d3748',
     marginBottom: '1.5rem',
+    '@media (max-width: 768px)': {
+      fontSize: '1.2rem',
+      marginBottom: '1rem',
+    },
   },
   subcategoryList: {
     display: 'flex',
@@ -279,6 +372,11 @@ const styles = {
     cursor: 'pointer',
     color: '#4a5568',
     transition: 'all 0.2s',
+    fontSize: '1rem',
+    '@media (max-width: 768px)': {
+      padding: '0.5rem 0.75rem',
+      fontSize: '0.9rem',
+    },
     ':hover': {
       backgroundColor: '#e2e8f0',
     },
@@ -292,12 +390,20 @@ const styles = {
     flex: 1,
     padding: '2rem',
     overflowY: 'auto',
+    '@media (max-width: 768px)': {
+      padding: '1rem',
+      marginLeft: '0',
+    },
   },
   contentTitle: {
     fontSize: '2rem',
     fontWeight: '600',
     color: '#2d3748',
     marginBottom: '2rem',
+    '@media (max-width: 768px)': {
+      fontSize: '1.5rem',
+      marginBottom: '1.5rem',
+    },
   },
   categoryOverview: {
     maxWidth: '1000px',
@@ -308,56 +414,28 @@ const styles = {
     borderRadius: '8px',
     padding: '2rem',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    '@media (max-width: 768px)': {
+      padding: '1rem',
+    },
   },
   description: {
     fontSize: '1.1rem',
     lineHeight: '1.7',
     color: '#4a5568',
     marginBottom: '2rem',
-  },
-  overviewSection: {
-    marginBottom: '2rem',
+    '@media (max-width: 768px)': {
+      fontSize: '1rem',
+      marginBottom: '1.5rem',
+    },
   },
   overviewTitle: {
     fontSize: '1.5rem',
     fontWeight: '600',
     color: '#2d3748',
     marginBottom: '1rem',
-  },
-  overviewContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.75rem',
-  },
-  overviewPoint: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '0.75rem',
-    fontSize: '1.1rem',
-    color: '#4a5568',
-  },
-  bulletPoint: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '0.5rem',
-    color: '#4a5568',
-    lineHeight: '1.6',
-  },
-  bullet: {
-    color: '#4299e1',
-    fontSize: '1.2rem',
-    lineHeight: '1.5',
-    flexShrink: 0,
-  },
-  answerParagraph: {
-    color: '#4a5568',
-    lineHeight: '1.6',
-    margin: 0,
-  },
-  answerContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
+    '@media (max-width: 768px)': {
+      fontSize: '1.3rem',
+    },
   },
   subcategoriesOverview: {
     marginTop: '2rem',
@@ -367,6 +445,10 @@ const styles = {
     gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
     gap: '1rem',
     marginTop: '1rem',
+    '@media (max-width: 768px)': {
+      gridTemplateColumns: '1fr',
+      gap: '0.75rem',
+    },
   },
   topicCard: {
     backgroundColor: '#f8fafc',
@@ -375,6 +457,9 @@ const styles = {
     cursor: 'pointer',
     transition: 'all 0.2s',
     border: '1px solid #e2e8f0',
+    '@media (max-width: 768px)': {
+      padding: '1rem',
+    },
     ':hover': {
       transform: 'translateY(-2px)',
       boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
@@ -385,6 +470,10 @@ const styles = {
     fontWeight: '600',
     color: '#2d3748',
     marginBottom: '1rem',
+    '@media (max-width: 768px)': {
+      fontSize: '1rem',
+      marginBottom: '0.75rem',
+    },
   },
   exploreButton: {
     backgroundColor: 'transparent',
@@ -399,25 +488,40 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '1.5rem',
+    '@media (max-width: 768px)': {
+      gap: '1rem',
+    },
   },
   questionCard: {
     backgroundColor: 'white',
     borderRadius: '8px',
     padding: '1.5rem',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    '@media (max-width: 768px)': {
+      padding: '1rem',
+    },
   },
   questionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: '1rem',
+    gap: '1rem',
+    '@media (max-width: 768px)': {
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+      gap: '0.5rem',
+    },
   },
   questionTitle: {
     fontSize: '1.2rem',
     fontWeight: '600',
     color: '#2d3748',
     flex: 1,
-    marginRight: '1rem',
+    margin: 0,
+    '@media (max-width: 768px)': {
+      fontSize: '1.1rem',
+    },
   },
   difficultyBadge: {
     padding: '0.25rem 0.75rem',
@@ -425,30 +529,105 @@ const styles = {
     color: 'white',
     fontSize: '0.875rem',
     fontWeight: '500',
+    whiteSpace: 'nowrap',
+    '@media (max-width: 768px)': {
+      fontSize: '0.8rem',
+      padding: '0.2rem 0.6rem',
+    },
   },
   error: {
     padding: '2rem',
     color: '#e53e3e',
     textAlign: 'center',
     fontSize: '1.2rem',
+    '@media (max-width: 768px)': {
+      padding: '1rem',
+      fontSize: '1rem',
+    },
   },
   inlineCode: {
     backgroundColor: '#f0f0f0',
     padding: '2px 4px',
     borderRadius: '3px',
     fontFamily: 'monospace',
-    color: '#c7254e', // A distinct color for inline code
+    color: '#c7254e',
+    fontSize: '0.9em',
+    '@media (max-width: 768px)': {
+      fontSize: '0.85em',
+    },
   },
-  codeBlockPre: { // Renamed from codeBlock to avoid conflict and signify <pre> tag
+  codeBlockPre: {
     background: '#f8f8f8',
     padding: '12px',
     borderRadius: '4px',
-    borderLeft: '3px solid #61dafb', // Blue border for code blocks
+    borderLeft: '3px solid #61dafb',
     overflowX: 'auto',
     margin: '16px 0',
-    whiteSpace: 'pre-wrap', // Preserves whitespace and line breaks inside pre
+    whiteSpace: 'pre-wrap',
     fontFamily: 'monospace',
-    color: '#333', // Default text color for code block content
+    color: '#333',
+    fontSize: '0.9rem',
+    '@media (max-width: 768px)': {
+      padding: '8px',
+      fontSize: '0.8rem',
+      margin: '12px 0',
+    },
+  },
+  bulletPoint: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.5rem',
+    color: '#4a5568',
+    lineHeight: '1.6',
+    marginBottom: '0.5rem',
+  },
+  bullet: {
+    color: '#4299e1',
+    fontSize: '1.2rem',
+    lineHeight: '1.5',
+    flexShrink: 0,
+  },
+  answerParagraph: {
+    color: '#4a5568',
+    lineHeight: '1.6',
+    margin: '0 0 0.5rem 0',
+    '@media (max-width: 768px)': {
+      fontSize: '0.95rem',
+    },
+  },
+  answerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5rem',
+  },
+  adContainer: {
+    marginTop: '2rem',
+    textAlign: 'center',
+    '@media (max-width: 768px)': {
+      marginTop: '1.5rem',
+    },
+  },
+  googleAd: {
+    display: 'inline-block',
+    width: '300px',
+    height: '250px',
+    '@media (max-width: 768px)': {
+      width: '100%',
+      maxWidth: '320px',
+      height: '100px',
+    },
+  },
+  mobileOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
+    '@media (min-width: 769px)': {
+      display: 'none',
+    },
   },
 }
 
