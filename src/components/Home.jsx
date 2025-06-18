@@ -43,11 +43,7 @@ const styles = {
     padding: '2rem',
     backgroundColor: '#f8f9fa',
     minHeight: 'calc(100vh - 80px)', // Assuming navbar is 80px
-    flex: 1,
-    '@media (max-width: 768px)': {
-      padding: '1rem',
-      minHeight: 'calc(100vh - 64px)',
-    },
+    flex: 1
   },
   container: {
     maxWidth: '1200px',
@@ -56,11 +52,6 @@ const styles = {
     backgroundColor: 'white',
     borderRadius: '8px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    '@media (max-width: 768px)': {
-      padding: '1rem',
-      margin: '0 0.5rem',
-      borderRadius: '6px',
-    },
   },
   title: {
     fontSize: '2.5rem',
@@ -68,13 +59,6 @@ const styles = {
     color: '#1a365d',
     marginBottom: '1rem',
     textAlign: 'center',
-    '@media (max-width: 768px)': {
-      fontSize: '1.8rem',
-      marginBottom: '0.75rem',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '1.5rem',
-    },
   },
   subtitle: {
     fontSize: '1.5rem',
@@ -82,40 +66,19 @@ const styles = {
     marginBottom: '2rem',
     textAlign: 'center',
     fontWeight: '500',
-    '@media (max-width: 768px)': {
-      fontSize: '1.2rem',
-      marginBottom: '1.5rem',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '1rem',
-    },
   },
   section: {
     marginBottom: '2rem',
-    '@media (max-width: 768px)': {
-      marginBottom: '1.5rem',
-    },
   },
   sectionTitle: {
     fontSize: '1.8rem',
     color: '#2d3748',
     marginBottom: '1rem',
     fontWeight: '600',
-    '@media (max-width: 768px)': {
-      fontSize: '1.4rem',
-      marginBottom: '0.75rem',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '1.2rem',
-    },
   },
   list: {
     paddingLeft: '2rem',
     marginBottom: '1rem',
-    '@media (max-width: 768px)': {
-      paddingLeft: '1.5rem',
-      marginBottom: '0.75rem',
-    },
   },
   conclusion: {
     fontSize: '1.2rem',
@@ -123,12 +86,6 @@ const styles = {
     color: '#2d3748',
     textAlign: 'center',
     fontStyle: 'italic',
-    '@media (max-width: 768px)': {
-      fontSize: '1rem',
-    },
-    '@media (max-width: 480px)': {
-      fontSize: '0.9rem',
-    },
   },
 }
 
