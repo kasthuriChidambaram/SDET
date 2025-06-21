@@ -3,6 +3,17 @@ import { useParams } from 'react-router-dom'
 import { categoryService } from '../services/categoryService'
 import { subcategoryService } from '../services/subcategoryService'
 import { questionService } from '../services/questionService'
+import CategorySidebar from './CategorySidebar'
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  return isMobile
+}
 
 function CategoryView() {
   const { categorySlug } = useParams()
@@ -11,6 +22,7 @@ function CategoryView() {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null)
   const [questions, setQuestions] = useState([])
   const [error, setError] = useState(null)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     const fetchCategoryAndSubcategories = async () => {
@@ -67,7 +79,7 @@ function CategoryView() {
     if (!category) return null
 
     return (
-      <div style={styles.categoryOverview}>
+      <div style={styles.categoryOverview} className="category-overview">
         <h2 style={styles.contentTitle}>{category.name}</h2>
         <div style={styles.overviewCard}>
           <p style={styles.description}>{category.description}</p>
@@ -184,28 +196,18 @@ function CategoryView() {
   };
 
   return (
-    <div style={styles.container}>
-      {/* Sidebar */}
-      <div style={styles.sidebar}>
-        <h2 style={styles.sidebarTitle}>{category?.name || 'Loading...'}</h2>
-        <div style={styles.subcategoryList}>
-          {subcategories.map(subcat => (
-            <button
-              key={subcat.id}
-              style={{
-                ...styles.subcategoryButton,
-                ...(selectedSubcategory?.id === subcat.id ? styles.selectedSubcategory : {})
-              }}
-              onClick={() => setSelectedSubcategory(subcat)}
-            >
-              {subcat.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
+    <div style={styles.container} className="category-container">
+      {/* Sidebar: only render on desktop */}
+      {!isMobile && (
+        <CategorySidebar
+          category={category}
+          subcategories={subcategories}
+          selectedSubcategory={selectedSubcategory}
+          setSelectedSubcategory={setSelectedSubcategory}
+        />
+      )}
       {/* Main content */}
-      <div style={styles.content}>
+      <div style={styles.content} className="category-content">
         {selectedSubcategory ? (
           <>
             <h2 style={styles.contentTitle}>{selectedSubcategory.name}</h2>
@@ -250,43 +252,7 @@ const getDifficultyColor = (difficulty) => {
 const styles = {
   container: {
     display: 'flex',
-    height: 'calc(100vh - 80px)', // Assuming navbar is 80px
-  },
-  sidebar: {
-    width: '300px',
-    backgroundColor: '#f8f9fa',
-    borderRight: '1px solid #e9ecef',
-    padding: '1.5rem',
-    overflowY: 'auto',
-  },
-  sidebarTitle: {
-    fontSize: '1.5rem',
-    fontWeight: '600',
-    color: '#2d3748',
-    marginBottom: '1.5rem',
-  },
-  subcategoryList: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
-  },
-  subcategoryButton: {
-    padding: '0.75rem 1rem',
-    textAlign: 'left',
-    border: 'none',
-    borderRadius: '4px',
-    backgroundColor: 'transparent',
-    cursor: 'pointer',
-    color: '#4a5568',
-    transition: 'all 0.2s',
-    ':hover': {
-      backgroundColor: '#e2e8f0',
-    },
-  },
-  selectedSubcategory: {
-    backgroundColor: '#e2e8f0',
-    color: '#2d3748',
-    fontWeight: '500',
+    height: 'calc(100vh - 64px)', // Corrected from 80px
   },
   content: {
     flex: 1,

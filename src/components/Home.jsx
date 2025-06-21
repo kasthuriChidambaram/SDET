@@ -3,7 +3,7 @@ import React from 'react'
 function Home() {
   return (
     <main style={styles.main}>
-      <div style={styles.container}>
+      <div style={styles.container} className="home-container">
         <h1 style={styles.title}>Welcome to Your SDET Interview Preparation Hub</h1>
         <h2 style={styles.subtitle}>Master the skills. Crack the interview. Accelerate your tech career.</h2>
         
@@ -42,7 +42,7 @@ const styles = {
   main: {
     padding: '2rem',
     backgroundColor: '#f8f9fa',
-    minHeight: 'calc(100vh - 80px)', // Assuming navbar is 80px
+    minHeight: 'calc(100vh - 64px)', // Corrected from 80px
     flex: 1
   },
   container: {

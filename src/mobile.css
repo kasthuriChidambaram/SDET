@@ -1,0 +1,70 @@
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  /* Ensure the mobile menu overlay covers the entire screen */
+  .mobile-menu-overlay {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  /* Mobile menu content */
+  .mobile-menu-content {
+    background-color: #ffffff;
+    padding: 1rem;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* Hamburger button styles */
+  .hamburger-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+  }
+
+  .hamburger-line {
+    width: 100%;
+    height: 3px;
+    background-color: #2d3748;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  /* Category button styles for mobile */
+  .mobile-category-button {
+    background: none;
+    border: none;
+    padding: 1rem;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+    color: #4a5568;
+    font-weight: 500;
+    width: 100%;
+  }
+
+  .mobile-category-button:hover {
+    background-color: #f7fafc;
+  }
+
+  .mobile-category-button:active {
+    background-color: #e2e8f0;
+  }
+}
+
+/* Prevent body scroll when mobile menu is open */
+body.mobile-menu-open {
+  overflow: hidden;
+} 

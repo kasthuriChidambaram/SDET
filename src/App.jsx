@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
-import Navbar from './components/Navbar'
+import ResponsiveNavbar from './components/ResponsiveNavbar'
 import Home from './components/Home'
 import CategoryView from './components/CategoryView'
 
@@ -9,7 +9,7 @@ function App() {
   return (
     <Router>
       <div style={styles.app}>
-        <Navbar />
+        <ResponsiveNavbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/:categorySlug" element={<CategoryView />} />

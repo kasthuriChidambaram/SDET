@@ -11,3 +11,58 @@ body {
 html {
   scroll-behavior: smooth;
 }
+
+@media (max-width: 768px) {
+  /* Force the layout to be contained */
+  body,
+  #root {
+    overflow-x: hidden !important;
+  }
+
+  /* Override fixed max-widths on mobile */
+  .home-container,
+  .category-overview {
+    max-width: 100% !important;
+  }
+
+  /* Hide the sidebar in CategoryView on mobile by class or role */
+  .category-sidebar,
+  [class*='sidebar'],
+  [style*='sidebar'] {
+    display: none !important;
+  }
+  /* Make sure the main content takes full width */
+  .category-container,
+  [class*='container'],
+  [style*='container'] {
+    flex-direction: column !important;
+  }
+  .category-content,
+  [class*='content'],
+  [style*='content'] {
+    width: 100% !important;
+    padding: 1rem !important;
+  }
+  /* Ensure main content areas are fluid */
+  .home-container,
+  .category-container {
+    padding: 1rem !important;
+    width: 100% !important;
+    box-sizing: border-box; /* Ensures padding is included in the width */
+  }
+
+  /* Adjust typography for mobile */
+  h1,
+  .h1 {
+    font-size: 1.8rem !important;
+  }
+  h2,
+  .h2 {
+    font-size: 1.5rem !important;
+  }
+  p,
+  li {
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+  }
+}
