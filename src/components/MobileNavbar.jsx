@@ -8,6 +8,10 @@ function MobileNavbar() {
     const [error, setError] = useState(null)
     const navigate = useNavigate()
     const location = useLocation()
+    useEffect(() => {
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
+    }, []);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -23,19 +27,16 @@ function MobileNavbar() {
         fetchCategories()
     }, [])
 
-    // Close menu when route changes
     useEffect(() => {
         setIsMenuOpen(false)
     }, [location.pathname])
 
-    // Prevent body scroll when menu is open
     useEffect(() => {
         if (isMenuOpen) {
             document.body.classList.add('mobile-menu-open')
         } else {
             document.body.classList.remove('mobile-menu-open')
         }
-
         return () => {
             document.body.classList.remove('mobile-menu-open')
         }
@@ -63,21 +64,34 @@ function MobileNavbar() {
     return (
         <nav style={styles.nav}>
             <div style={styles.header}>
-                <Link to="/" style={styles.logo}>SDET Interview Prep</Link>
-                <button 
-                    style={styles.hamburger}
-                    onClick={toggleMenu}
-                    aria-label="Toggle menu"
-                    className="hamburger-button"
-                >
-                    <span style={{fontSize: '2rem', color: '#2d3748', lineHeight: 1}}>☰</span>
-                </button>
+                <div style={styles.leftAction}>
+                    <button
+                        style={styles.hamburger}
+                        onClick={toggleMenu}
+                        aria-label="Toggle menu"
+                    >
+                        <svg 
+                            width="24" 
+                            height="24" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <path 
+                                d="M4 6H20M4 12H20M4 18H20" 
+                                stroke="#2d3748" 
+                                strokeWidth="2" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                    </button>
+                </div>
             </div>
-            
-            {/* Mobile Menu Overlay */}
+
             {isMenuOpen && (
-                <div 
-                    style={styles.menuOverlay} 
+                <div
+                    style={styles.menuOverlay}
                     className="mobile-menu-overlay"
                     onClick={handleOverlayClick}
                 >
@@ -113,40 +127,31 @@ const styles = {
     header: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '1rem 1.5rem',
+        justifyContent: 'flex-start',
         height: '64px',
+        padding: '0 1rem',
     },
-    logo: {
-        fontSize: '1.1rem',
-        fontWeight: 'bold',
-        textDecoration: 'none',
-        color: '#2d3748',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        flexShrink: 1,
-        marginRight: '1rem',
+    leftAction: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        height: '64px',
     },
     hamburger: {
         background: 'none',
         border: 'none',
         cursor: 'pointer',
-        padding: '0.5rem',
+        padding: 0,
+        margin: 0,
+        height: '64px',
+        width: '40px',
         display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-around',
-        width: '30px',
-        height: '30px',
-        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        left: '0px',
+        top: '0px',
         zIndex: 9999,
-    },
-    hamburgerLine: {
-        width: '100%',
-        height: '3px',
-        backgroundColor: '#2d3748',
-        borderRadius: '2px',
-        transition: 'all 0.3s ease',
     },
     menuOverlay: {
         position: 'fixed',
@@ -192,4 +197,4 @@ const styles = {
     },
 }
 
-export default MobileNavbar 
+export default MobileNavbar
